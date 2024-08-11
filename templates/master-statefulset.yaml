@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "redis.name" . }}-master
+spec:
+  serviceName: {{ include "redis.name" . }}-master
+  replicas: {{ .Values.master.replicaCount }}
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: concentric-ai-eks-node-group
+      containers:
+        - name: redis
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis/redis.conf
+              subPath: redis-master.conf
+          command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+      volumes:
+        - name: redis-config
+          configMap:
+            name: {{ include "redis.name" . }}-config
+      volumeClaimTemplates:
+        - metadata:
+            name: redis-data
+          spec:
+            accessModes: [ "{{ .Values.persistence.accessModes | join "," }}" ]
+            resources:
+              requests:
+                storage: {{ .Values.persistence.size }}
+            storageClassName: {{ .Values.persistence.storageClass }}

@@ -1,0 +1,95 @@
+ubuntu@ip-10-1-7-62:~/redis$ helm upgrade --install redis . 
+Release "redis" does not exist. Installing it now.
+W0809 19:48:30.021636    7844 warnings.go:70] unknown field "spec.template.spec.volumeClaimTemplates"
+W0809 19:48:30.022589    7844 warnings.go:70] unknown field "spec.template.spec.volumeClaimTemplates"
+NAME: redis
+LAST DEPLOYED: Fri Aug  9 19:48:29 2024
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+
+ubuntu@ip-10-1-7-62:~/redis$ kubectl get po
+NAME              READY   STATUS    RESTARTS   AGE
+redis-master-0    1/1     Running   0          112s
+redis-master-1    1/1     Running   0          84s
+redis-master-2    1/1     Running   0          82s
+redis-replica-0   1/1     Running   0          112s
+redis-replica-1   1/1     Running   0          82s
+redis-replica-2   1/1     Running   0          81s
+redis-replica-3   1/1     Running   0          68s
+redis-replica-4   1/1     Running   0          66s
+redis-replica-5   1/1     Running   0          65s
+
+ubuntu@ip-10-1-7-62:~/redis$ bash setup_redis.sh 
+>>> Performing hash slots allocation on 9 nodes...
+Master[0] -> Slots 0 - 4095
+Master[1] -> Slots 4096 - 8191
+Master[2] -> Slots 8192 - 12287
+Master[3] -> Slots 12288 - 16383
+Adding replica 10.1.4.206:6379 to 10.1.4.84:6379
+Adding replica 10.1.5.151:6379 to 10.1.5.15:6379
+Adding replica 10.1.5.61:6379 to 10.1.5.239:6379
+Adding replica 10.1.4.60:6379 to 10.1.4.178:6379
+Adding extra replicas...
+Adding replica 10.1.5.254:6379 to 10.1.4.84:6379
+M: 13c6cdda755318701a517eb75897e6012126fda0 10.1.4.84:6379
+   slots:[0-4095] (4096 slots) master
+M: 3001e467965c9cecab45115ec4df6a8a211d2296 10.1.5.15:6379
+   slots:[4096-8191] (4096 slots) master
+M: ea68ed55f90ba1681098583636df291ed16314c9 10.1.5.239:6379
+   slots:[8192-12287] (4096 slots) master
+M: ccc1291a5dde817831116505e85fa0b3cab4adfb 10.1.4.178:6379
+   slots:[12288-16383] (4096 slots) master
+S: 46d001858e5d180011e933e07c22f192af99c998 10.1.5.254:6379
+   replicates 13c6cdda755318701a517eb75897e6012126fda0
+S: e5bdc57415b7c26f3ddda8214100e53fb9266f95 10.1.4.206:6379
+   replicates 13c6cdda755318701a517eb75897e6012126fda0
+S: b2af8b7e89ab1450dab1960bc6f6074f084890fa 10.1.5.151:6379
+   replicates 3001e467965c9cecab45115ec4df6a8a211d2296
+S: 1dee8cf205d02b64c9641682db67b173f573fab3 10.1.5.61:6379
+   replicates ea68ed55f90ba1681098583636df291ed16314c9
+S: 94b7cb801ac9fa02e1bb12c94f8b22db8fd9aa4a 10.1.4.60:6379
+   replicates ccc1291a5dde817831116505e85fa0b3cab4adfb
+Can I set the above configuration? (type 'yes' to accept): >>> Nodes configuration updated
+>>> Assign a different config epoch to each node
+>>> Sending CLUSTER MEET messages to join the cluster
+Waiting for the cluster to join
+...
+>>> Performing Cluster Check (using node 10.1.4.84:6379)
+M: 13c6cdda755318701a517eb75897e6012126fda0 10.1.4.84:6379
+   slots:[0-4095] (4096 slots) master
+   2 additional replica(s)
+S: e5bdc57415b7c26f3ddda8214100e53fb9266f95 10.1.4.206:6379
+   slots: (0 slots) slave
+   replicates 13c6cdda755318701a517eb75897e6012126fda0
+M: ea68ed55f90ba1681098583636df291ed16314c9 10.1.5.239:6379
+   slots:[8192-12287] (4096 slots) master
+   1 additional replica(s)
+M: 3001e467965c9cecab45115ec4df6a8a211d2296 10.1.5.15:6379
+   slots:[4096-8191] (4096 slots) master
+   1 additional replica(s)
+S: 94b7cb801ac9fa02e1bb12c94f8b22db8fd9aa4a 10.1.4.60:6379
+   slots: (0 slots) slave
+   replicates ccc1291a5dde817831116505e85fa0b3cab4adfb
+S: 1dee8cf205d02b64c9641682db67b173f573fab3 10.1.5.61:6379
+   slots: (0 slots) slave
+   replicates ea68ed55f90ba1681098583636df291ed16314c9
+S: b2af8b7e89ab1450dab1960bc6f6074f084890fa 10.1.5.151:6379
+   slots: (0 slots) slave
+   replicates 3001e467965c9cecab45115ec4df6a8a211d2296
+S: 46d001858e5d180011e933e07c22f192af99c998 10.1.5.254:6379
+   slots: (0 slots) slave
+   replicates 13c6cdda755318701a517eb75897e6012126fda0
+M: ccc1291a5dde817831116505e85fa0b3cab4adfb 10.1.4.178:6379
+   slots:[12288-16383] (4096 slots) master
+   1 additional replica(s)
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.
+Cluster is operational on node 10.1.4.84.
+Pushing data to master node 10.1.4.84...
+OK
+Data successfully pushed to master node 10.1.4.84.
+Data replication successful.
+ubuntu@ip-10-1-7-62:~/redis$ 

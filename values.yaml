@@ -1,0 +1,23 @@
+master:
+  replicaCount: 3
+
+replica:
+  replicaCount: 6
+
+image:
+  repository: redis
+  pullPolicy: IfNotPresent
+  tag: "6.2.5"
+
+service:
+  type: ClusterIP
+  port: 6379
+
+resources: {}
+
+persistence:
+  enabled: true
+  storageClass: "standard"
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
